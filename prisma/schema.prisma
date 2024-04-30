@@ -1,0 +1,41 @@
+// Este es tu archivo de schema, aquí defines tus modelos y sus relaciones
+// Mayor documentación https://pris.ly/d/prisma-schema
+
+// Este parte del código, creará el cliente para que puedas hacer las peticiones ded
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Esta es la conexión directa a la base de datos
+datasource db {
+  provider = "mysql"
+  // Tienes que tener una variable de entorno llamada DATABASE_URL
+  // Como lo conectarias en tu archivo .env, donde pondrías
+  // Tu ruta DATABASE_URL="mysql://usuario:contraseña@localhost:3306/nombre_de_la_base_de_datos"
+  // Mysql tiene el mismo motor que MariaDB, por lo que para prisma hacen el mismo funcionamiento
+  url      = env("DATABASE_URL")
+}
+
+
+// Cada modelo es una tabla
+model Users {
+  id Int @id @default(autoincrement())
+  email String @db.VarChar(50)
+  userName String @db.VarChar(50)
+  pass String @db.VarChar(50)
+  // Como se haría una relación:
+  // Si partimos que cada tabla Users tiene sus blogs, y que cada Users tiene muchoss Blogs, entonces, es una relación de uno a muchos
+  blogs Blogs[] // Una lista de blogs
+}
+
+model Blogs {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(50) 
+  content String @db.VarChar(150) 
+  createdAt DateTime  
+  updatedAt DateTime 
+  // Si partimos que cada tabla Users tiene sus blogs, y que cada Users tiene muchoss Blogs, entonces, es una relación de uno a muchos
+  // Y el solo tiene un author
+  authorId Int
+  author  Users @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
